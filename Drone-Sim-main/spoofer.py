@@ -19,6 +19,7 @@ class Spoofer:
             spoofed_message['latitude'] += random.uniform(-0.05, 0.05)
             spoofed_message['longitude'] += random.uniform(-0.05, 0.05)
             spoofed_message['altitude'] += random.uniform(-50, 50)
+            spoofed_message['timestamp'] += time.time() + random.uniform(0,0.6) #delete if needed. 
             spoofed_message['drone_id'] = self.fake_drone_id if random.random() < 0.5 else message['drone_id']
             return spoofed_message, True
         return message, False
