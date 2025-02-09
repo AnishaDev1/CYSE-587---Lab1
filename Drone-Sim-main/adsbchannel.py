@@ -52,7 +52,6 @@ class ADSBChannel:
 
         # Initialize SNR with the basic calculation
         snr_db = rx_power_dbm - (noise_power_dbm + self.noise_figure_db)
-
         # Apply jamming effects if a jammer is present
         if jammer:
             jamming_signal_power_dbm = jammer.jamming_signal_power()
