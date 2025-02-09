@@ -19,7 +19,7 @@ class Spoofer:
             spoofed_message['latitude'] += random.uniform(-0.5, 0.5) #changed ranges 
             spoofed_message['longitude'] += random.uniform(-0.5, 0.5) #changed ranges 
             spoofed_message['altitude'] += random.uniform(-60, 60) #changed ranges
-            spoofed_message['timestamp'] += time.time() + random.uniform(0.8, 1.2) # ADS-B broadcast at random time, roughly 0.8 - 1.2 seconds
+            spoofed_message['timestamp'] += time.time() + random.uniform(0.8, 1.2) # modified range to reflect ADS-B broadcast at random time, roughly 0.8 - 1.2 seconds
             spoofed_message['drone_id'] = self.fake_drone_id if random.random() < 0.5 else message['drone_id']
             return spoofed_message, True
         return message, False
