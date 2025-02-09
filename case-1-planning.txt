@@ -2,3 +2,5 @@
     TajDini et. al, "ADS-B equipment broadcast a lot of helpful information like GPS location, ground speed, altitude, and 
     much more almost every single second, a random time between 0.8 to 1.2 seconds". Could use this range in spoofer.py?
 - Increase spoofed signal power over time to implement gradual spoofing?
+- Modify value of spoof_probability in n_Scen_adsb_attack.py and spoofer.py
+- Modify values of noise to decrease SNR value and introduce more noise in the channel
