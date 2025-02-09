@@ -67,7 +67,7 @@ class ADSBChannel:
             spoofed_message, spoofed = spoofer.spoof_message(message)
             if spoofed:
                 # Assuming the spoofed message interferes with the legitimate signal
-                spoofing_signal_power_dbm = tx_power_dbm # ASssuming same power for simplicity
+                spoofing_signal_power_dbm = tx_power_dbm # Assuming same power for simplicity
                 effective_noise_power_dbm = 10 * np.log10(
                     10**(noise_power_dbm / 10) + 10**(spoofing_signal_power_dbm / 10)
                 )
