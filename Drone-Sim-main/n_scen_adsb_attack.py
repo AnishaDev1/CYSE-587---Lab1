@@ -8,7 +8,7 @@ from gcs import GCS
 from adsbchannel import ADSBChannel
 from jammer import Jammer
 from spoofer import Spoofer
-from jammer import PulsedNoiseJammer
+#from jammer import PulsedNoiseJammer
 import threading
 
 # Define central location (e.g., Washington, D.C.)

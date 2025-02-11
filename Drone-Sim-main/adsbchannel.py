@@ -2,11 +2,11 @@ import numpy as np
 import random
 import time
 
-from jammer import PulsedNoiseJammer
-from gcs import GroundControlStation
+#from jammer import PulsedNoiseJammer
+#from gcs import GroundControlStation
 
-pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
-gcs = GroundControlStation()
+#pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
+#gcs = GroundControlStation()
 
 class ADSBChannel:
     def __init__(self, error_rate=0.01, frequency=1090e6, noise_figure_db=5.0):
@@ -92,9 +92,9 @@ class ADSBChannel:
         corrupted_message['altitude'] += random.uniform(-10, 10)
         return corrupted_message
     
-    def transmit_message(signal):
+    #def transmit_message(signal):
 
-        if pulsed_jammer.jamming_active:
-            signal = pulsed_jammer.jam_signal(signal)
+      #  if pulsed_jammer.jamming_active:
+      #      signal = pulsed_jammer.jam_signal(signal)
 
-        gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
+      #  gcs.receive_update(signal) # send update to gcs somehow, idk if this is right

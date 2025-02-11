@@ -29,33 +29,33 @@ class Jammer:
         """Returns the power of the jamming signal in dBm."""
         return self.jamming_power_dbm
 
-class PulsedNoiseJammer:
-    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
-        self.pulse_duration = pulse_duration
-        self.pulse_interval = pulse_interval
-        self.noise_level = noise_level
-        self.jamming_active = False
+#class PulsedNoiseJammer:
+    #def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
+        #self.pulse_duration = pulse_duration
+        #self.pulse_interval = pulse_interval
+        #self.noise_level = noise_level
+        #self.jamming_active = False
 
-    def generate_noise(self, signal_length):
-        return np.random.normal(0, self.noise_level, signal_length)
+   # def generate_noise(self, signal_length):
+        #return np.random.normal(0, self.noise_level, signal_length)
 
-    def jam_signal(self, signal):
-        jammed_signal = np.copy(signal)
-        current_time = 0
+   # def jam_signal(self, signal):
+        #jammed_signal = np.copy(signal)
+        #current_time = 0
         
-        while current_time < len(signal):
-            if random.random() > 0.5:  # Random chance to activate jamming
-                noise_burst = self.generate_noise(min(int(self.pulse_duration * len(signal)), len(signal) - current_time))
-                jammed_signal[current_time:current_time+len(noise_burst)] += noise_burst
-            current_time += int(self.pulse_interval * len(signal))
+        #while current_time < len(signal):
+            #if random.random() > 0.5:  # Random chance to activate jamming
+                #noise_burst = self.generate_noise(min(int(self.pulse_duration * len(signal)), len(signal) - current_time))
+                #jammed_signal[current_time:current_time+len(noise_burst)] += noise_burst
+            #current_time += int(self.pulse_interval * len(signal))
 
-        return jammed_signal
+        #return jammed_signal
 
-    def start_jamming(self):
-        while True:
-            print("Jamming activated")
-            self.jamming_active = True
-            time.sleep(self.pulse_duration)
-            print("Jamming deactivated")
-            self.jamming_active = False
-            time.sleep(self.pulse_interval)
+   # def start_jamming(self):
+        #while True:
+            #print("Jamming activated")
+            #self.jamming_active = True
+            #time.sleep(self.pulse_duration)
+            #print("Jamming deactivated")
+            #self.jamming_active = False
+            #time.sleep(self.pulse_interval)
