@@ -97,4 +97,4 @@ class ADSBChannel:
         if pulsed_jammer.jamming_active:
             signal = pulsed_jammer.jam_signal(signal)
 
-    gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
+        gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
