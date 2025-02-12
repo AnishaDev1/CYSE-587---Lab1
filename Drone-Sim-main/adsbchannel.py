@@ -2,11 +2,11 @@ import numpy as np
 import random
 import time
 
-from jammer import PulsedNoiseJammer
+# from jammer import PulsedNoiseJammer
 from gcs import GCS
 
-pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
-gcs = GCS()
+# pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
+# gcs = GCS()
 
 class ADSBChannel:
     def __init__(self, error_rate=0.01, frequency=1090e6, noise_figure_db=5.0):
