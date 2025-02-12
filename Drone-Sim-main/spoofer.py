@@ -2,11 +2,11 @@ import random
 import numpy as np
 import time
 #some positioning libraries that may be helpful. 
-import geopy 
-from geographiclib import geodesic #can calculate distances between coordinates with this??
-from gcs import GCS
-import pygnssutils
-import gnssanalysis #this one took a few min for an install
+#import geopy 
+#from geographiclib import geodesic #can calculate distances between coordinates with this??
+#from gcs import GCS
+#import pygnssutils
+#import gnssanalysis #this one took a few min for an install
 
 class Spoofer:
     """
