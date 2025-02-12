@@ -5,3 +5,11 @@
 - Modify value of spoof_probability in n_scen_adsb_attack.py and spoofer.py -- online sources say 95% accuracy in detectino so maybe 5% or like 0.5 makes sense?
 - Modify values of noise to decrease SNR value and introduce more noise in the channel -- looks like the noise is a calculated value that I don't think we can do...
 -Maybe try randomizing fake drone names as well?
+
+
+Libraries/Brainstorm to do Positioning:
+- gpsd -- allows to calculate heading between two points, and speed...
+-geopy -- also seems to do what gpsd does, 
+--geographiclib
+-pygnssutils 
+--gnssanalysis

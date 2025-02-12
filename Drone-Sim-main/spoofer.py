@@ -1,6 +1,12 @@
 import random
 import numpy as np
 import time
+#some positioning libraries that may be helpful. 
+import geopy 
+from geographiclib import geodesic #can calculate distances between coordinates with this??
+from gcs import GCS
+import pygnssutils
+import gnssanalysis #this one took a few min for an install
 
 class Spoofer:
     """
@@ -22,5 +28,6 @@ class Spoofer:
                 spoofed_message['altitude'] += random.uniform(-60, 60) #changed ranges
                 spoofed_message['timestamp'] += time.time() + random.uniform(0.8, 1.2) # modified range to reflect ADS-B broadcast at random time, roughly 0.8 - 1.2 seconds, to report wrong time
                 spoofed_message['drone_id'] = self.fake_drone_id if random.random() < 0.5 else message['drone_id']
+                #for positioning maybe we use recieve update in GCS from the real drone and like add a few meters to it?
                 return spoofed_message, True
         return message, False
