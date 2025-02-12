@@ -92,9 +92,9 @@ class ADSBChannel:
         corrupted_message['altitude'] += random.uniform(-10, 10)
         return corrupted_message
     
-    def transmit_message(signal):
+    # def transmit_message(signal):
 
-       if pulsed_jammer.jamming_active:
-           signal = pulsed_jammer.jam_signal(signal)
+    #    if pulsed_jammer.jamming_active:
+    #        signal = pulsed_jammer.jam_signal(signal)
 
-       gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
+    #    gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
