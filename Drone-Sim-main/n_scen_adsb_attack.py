@@ -42,7 +42,7 @@ drones = [
 # Initialize the communication channel, jammer, and spoofer
 channel = ADSBChannel()
 jammer = Jammer(jamming_probability=0.4, noise_intensity=0.8)  # Adjust probability as needed
-spoofer = Spoofer(spoof_probability=0.5, fake_drone_id="FAKE-DRONE")
+spoofer = Spoofer(spoof_probability=0.5, fake_drone_id="FAKE-DRONE") #made probability the same as spoofer.py to be 0.5
 
 # Create a figure for 3D plotting
 fig = plt.figure()

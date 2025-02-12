@@ -1,6 +1,7 @@
 - According to 'Performing Sniffing and Spoofing Attack Against ADS-B and Mode S using Software Define Radio' paper by 
     TajDini et. al, "ADS-B equipment broadcast a lot of helpful information like GPS location, ground speed, altitude, and 
     much more almost every single second, a random time between 0.8 to 1.2 seconds". Could use this range in spoofer.py?
-- Increase spoofed signal power over time to implement gradual spoofing?
-- Modify value of spoof_probability in n_scen_adsb_attack.py and spoofer.py
-- Modify values of noise to decrease SNR value and introduce more noise in the channel
+- Increase spoofed signal power over time to implement gradual spoofing? 
+- Modify value of spoof_probability in n_scen_adsb_attack.py and spoofer.py -- online sources say 95% accuracy in detectino so maybe 5% or like 0.5 makes sense?
+- Modify values of noise to decrease SNR value and introduce more noise in the channel -- looks like the noise is a calculated value that I don't think we can do...
+-Maybe try randomizing fake drone names as well?
