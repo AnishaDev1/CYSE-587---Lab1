@@ -20,7 +20,7 @@ class Spoofer:
     def spoof_message(self, message):
         """Modify a real drone message or inject a fake drone."""
         if random.random() < self.spoof_probability:
-            for i in random.uniform(0, 200): # for loop to spoof messages a random number of times (between 0 and 200)
+            #for i in random.randrange(0, 200): # for loop to spoof messages a random number of times (between 0 and 200)
                 print("[Spoofer] Spoofing message:", message)
                 spoofed_message = message.copy()
                 spoofed_message['latitude'] += random.uniform(-0.5, 0.5) #changed ranges 
