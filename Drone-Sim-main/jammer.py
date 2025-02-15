@@ -30,36 +30,65 @@ class Jammer:
         """Returns the power of the jamming signal in dBm."""
         return self.jamming_power_dbm
 
-#class PulsedNoiseJammer:
-    #def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
-        #self.pulse_duration = pulse_duration
-        #self.pulse_interval = pulse_interval
-        #self.noise_level = noise_level
-        #self.jamming_active = False
+class PulsedNoiseJammer:
+    """
+    Implements Pulsed Noise Jamming (Burst Jamming) where interference occurs in short bursts.
+    """
+    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
+        self.pulse_duration = pulse_duration  # Duration of jamming bursts (seconds)
+        self.pulse_interval = pulse_interval  # Time between bursts (seconds)
+        self.noise_level = noise_level  # Intensity of noise
+        self.jamming_active = False
+        self.jamming_thread = None
 
-   # def generate_noise(self, signal_length):
-        #return np.random.normal(0, self.noise_level, signal_length)
+    def generate_noise(self, signal_length):
+        """ Generate noise burst """
+        return np.random.normal(0, self.noise_level, signal_length)
 
-   # def jam_signal(self, signal):
-        #jammed_signal = np.copy(signal)
-        #current_time = 0
+    def jam_signal(self, message):
+        """ Introduce pulsed noise into the signal """
+        if message is None:
+            return None
         
-        #while current_time < len(signal):
-            #if random.random() > 0.5:  # Random chance to activate jamming
-                #noise_burst = self.generate_noise(min(int(self.pulse_duration * len(signal)), len(signal) - current_time))
-                #jammed_signal[current_time:current_time+len(noise_burst)] += noise_burst
-            #current_time += int(self.pulse_interval * len(signal))
+        if random.random() > 0.5:  # Random chance to activate jamming
+            print("[PulsedNoiseJammer] Jamming message:", message)
+            message['latitude'] += random.uniform(-0.1, 0.1)
+            message['longitude'] += random.uniform(-0.1, 0.1)
+            message['altitude'] += random.uniform(-50, 50)
+        
+        return message
 
-        #return jammed_signal
+    def start_jamming(self):
+        """ Start pulsed jamming in a separate thread """
+        if not self.jamming_active:
+            self.jamming_active = True
+            self.jamming_thread = threading.Thread(target=self._run_jamming, daemon=True)
+            self.jamming_thread.start()
+            print("[PulsedNoiseJammer] Jamming started...")
 
-   # def start_jamming(self):
-        #while True:
-            #print("Jamming activated")
-            #self.jamming_active = True
-            #time.sleep(self.pulse_duration)
-            #print("Jamming deactivated")
-            #self.jamming_active = False
-            #time.sleep(self.pulse_interval)
+    def stop_jamming(self):
+        """ Stop jamming """
+        if self.jamming_active:
+            self.jamming_active = False
+            if self.jamming_thread is not None:
+                self.jamming_thread.join()
+            print("[PulsedNoiseJammer] Jamming stopped.")
+
+    def _run_jamming(self):
+        """ Internal function to activate jamming bursts """
+        while self.jamming_active:
+            print("[PulsedNoiseJammer] Jamming activated")
+            time.sleep(self.pulse_duration)
+            print("[PulsedNoiseJammer] Jamming deactivated")
+            time.sleep(self.pulse_interval)
+
+# Example Usage
+if __name__ == "__main__":
+    jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
+    jammer.start_jamming()
+    time.sleep(10)  # Simulate system running
+    jammer.stop_jamming()
+
 
 
 #class ContinuousWaveJammer:
@@ -72,20 +101,20 @@ class Jammer:
         #self.jamming_thread = None  # Thread for jamming process
 
     #def jam_signal(self, signal):
-        """
-        Continuously adds noise to the incoming signal.
-        'signal' is a numerical list/array.
-        """
+        
+        #Continuously adds noise to the incoming signal.
+        #'signal' is a numerical list/array.
+        # """
         #jammed_signal = np.array(signal) + np.random.normal(0, self.noise_level, len(signal))
         #print("[ContinuousWaveJammer] Adding continuous noise...")
         #return jammed_signal
 
     #def jamming_signal_power(self):
-        """Returns the power of the CW jamming signal in dBm."""
+        #"""Returns the power of the CW jamming signal in dBm."""
         #return self.power_dbm
     
     #def start_jamming(self):
-        """Starts continuous jamming in a separate thread."""
+        #"""Starts continuous jamming in a separate thread."""
         #if not self.jamming_active:
          #   self.jamming_active = True
           #  self.jamming_thread = threading.Thread(target=self._run_jamming, daemon=True)
@@ -93,7 +122,7 @@ class Jammer:
            # print("[CWJammer] Jamming started...")
 
     #def stop_jamming(self):
-        """Stops continuous jamming."""
+        #"""Stops continuous jamming."""
      #   if self.jamming_active:
       #      self.jamming_active = False
        #     if self.jamming_thread is not None:
@@ -101,7 +130,7 @@ class Jammer:
          #   print("[CWJammer] Jamming stopped.")
 
     #def _run_jamming(self):
-        """Internal function to generate continuous jamming noise at intervals."""
+        #"""Internal function to generate continuous jamming noise at intervals."""
      #   while self.jamming_active:
     #      print(f"[CWJammer] Jamming active... Power: {self.power_dbm} dBm")
     #       time.sleep(self.jamming_interval)

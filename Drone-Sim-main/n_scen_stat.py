@@ -9,7 +9,7 @@ from adsbchannel import ADSBChannel
 from jammer import Jammer
 from spoofer import Spoofer
 import seaborn as sns
-
+from jammer import PulsedNoiseJammer
 
 # Define central location (e.g., Washington, D.C.)
 center_lat, center_lon = 38.8977, -77.0365  # White House location
@@ -136,7 +136,8 @@ def plot_packet_loss_data(results, colors=None, output_path='results/packet_loss
 # Function to run a simulation scenario
 def run_simulation(jamming=False, spoofing=False, spoof_probability=0.5): # adjust spoof probability from 0.3 to 0.5 to match value in other files
     channel = ADSBChannel()
-    jammer = Jammer(jamming_probability=0.4, noise_intensity=0.8) if jamming else None
+    jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0) if jamming else None
+
     spoofer = Spoofer(spoof_probability=spoof_probability, fake_drone_id="FAKE-DRONE") if spoofing else None
 
     drones = initialize_drones()
@@ -168,6 +169,8 @@ def run_simulation(jamming=False, spoofing=False, spoof_probability=0.5): # adju
             received_message, delay_ns, corrupted, snr_db = channel.transmit(
                 original_message, gcs_pos, jammer=jammer, spoofer=spoofer
             )
+            if jamming and received_message is not None:
+                received_message = jammer.jam_signal(received_message)
             receive_time = time.time()
             total_messages += 1
 

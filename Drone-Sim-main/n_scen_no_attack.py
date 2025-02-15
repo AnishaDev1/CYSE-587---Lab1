@@ -6,6 +6,7 @@ from drone import Drone
 from route import RouteGenerator
 from gcs import GCS
 from channel import Channel
+from jammer import PulsedNoiseJammer
 
 # Define central location (e.g., Washington, D.C.)
 center_lat, center_lon = 38.8977, -77.0365  # White House location
@@ -24,8 +25,12 @@ drones = [
     for i in range(len(routes))
 ]
 
+ENABLE_JAMMING = False  # Set to True to enable pulsed noise jamming for testing
+
 # Initialize the communication channel
 channel = Channel(delay_mean=0.1, delay_std=0.05, error_rate=0.01)
+jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0) if ENABLE_JAMMING else None
+
 
 # Create a figure for 3D plotting
 fig = plt.figure()
@@ -76,7 +81,9 @@ def update(frame):
 
             # Transmit message through the channel
             received_message, delay, corrupted = channel.transmit(original_message)
-
+            if ENABLE_JAMMING and received_message is not None:
+                received_message = jammer.jam_signal(received_message)
+                
             # Print original and received messages
             print(f"Original Message from Drone {drone.id}: {original_message}")
             if corrupted:
