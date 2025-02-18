@@ -91,58 +91,64 @@ if __name__ == "__main__":
 
 
 
-#class ContinuousWaveJammer:
-    #Simulates CW Jamming, which continuously interferes with signals by adding a constant noise.
-    #def __init__(self, power_dbm=-60, noise_level=0.5, jamming_interval=3.0):
-        #self.power_dbm = power_dbm
-        #self.noise_level = noise_level  # Determines strength of interference
-        #self.jamming_interval = jamming_interval  # Time between jamming signals
-        #self.jamming_active = False  # Track if jamming is active
-        #self.jamming_thread = None  # Thread for jamming process
+class ContinuousWaveJammer:
+    """
+    Simulates CW Jamming, continuously interfering with signals by adding constant noise.
+    """
 
-    #def jam_signal(self, signal):
-        
-        #Continuously adds noise to the incoming signal.
-        #'signal' is a numerical list/array.
-        # """
-        #jammed_signal = np.array(signal) + np.random.normal(0, self.noise_level, len(signal))
-        #print("[ContinuousWaveJammer] Adding continuous noise...")
-        #return jammed_signal
+    def __init__(self, power_dbm=-60, noise_level=0.5, jamming_interval=1.0):
+        self.power_dbm = power_dbm  # Jamming signal power
+        self.noise_level = noise_level  # Strength of interference
+        self.jamming_interval = jamming_interval  # Time between noise applications
+        self.jamming_active = False  # Track if jamming is running
+        self.jamming_thread = None  # Thread to handle jamming
 
-    #def jamming_signal_power(self):
-        #"""Returns the power of the CW jamming signal in dBm."""
-        #return self.power_dbm
-    
-    #def start_jamming(self):
-        #"""Starts continuous jamming in a separate thread."""
-        #if not self.jamming_active:
-         #   self.jamming_active = True
-          #  self.jamming_thread = threading.Thread(target=self._run_jamming, daemon=True)
-          #  self.jamming_thread.start()
-           # print("[CWJammer] Jamming started...")
+    def jam_signal(self, message):
+        """
+        Adds continuous noise to GPS signal.
+        message: Dictionary containing latitude, longitude, and altitude.
+        Returns a jammed message.
+        """
+        if message is None:
+            return None
 
-    #def stop_jamming(self):
-        #"""Stops continuous jamming."""
-     #   if self.jamming_active:
-      #      self.jamming_active = False
-       #     if self.jamming_thread is not None:
-        #        self.jamming_thread.join()
-         #   print("[CWJammer] Jamming stopped.")
+        jammed_message = message.copy()
+        jammed_message['latitude'] += np.random.normal(0, self.noise_level)
+        jammed_message['longitude'] += np.random.normal(0, self.noise_level)
+        jammed_message['altitude'] += np.random.normal(0, self.noise_level * 50)  # Adjusted for altitude variations
 
-    #def _run_jamming(self):
-        #"""Internal function to generate continuous jamming noise at intervals."""
-     #   while self.jamming_active:
-    #      print(f"[CWJammer] Jamming active... Power: {self.power_dbm} dBm")
-    #       time.sleep(self.jamming_interval)
+        print("[CWJammer] Jamming signal applied:", jammed_message)
+        return jammed_message
 
-#if __name__ == "__main__": # Test the jammer classes
- #   cw_jammer = ContinuousWaveJammer(power_dbm=-55, noise_level=1.0, jamming_interval=3.0)
+    def jamming_signal_power(self):
+        """Returns the power of the CW jamming signal in dBm."""
+        return self.power_dbm
 
-    # Start jamming in the background
-  #  cw_jammer.start_jamming()
+    def start_jamming(self):
+        """Starts continuous jamming in a separate thread."""
+        if not self.jamming_active:
+            self.jamming_active = True
+            self.jamming_thread = threading.Thread(target=self._run_jamming, daemon=True)
+            self.jamming_thread.start()
+            print("[CWJammer] Continuous jamming started...")
 
-    # Simulate some processing time
-   # time.sleep(10)  
+    def stop_jamming(self):
+        """Stops continuous jamming."""
+        if self.jamming_active:
+            self.jamming_active = False
+            if self.jamming_thread is not None:
+                self.jamming_thread.join(timeout=1.0)  # Timeout prevents blocking
+            print("[CWJammer] Jamming stopped.")
 
-    # Stop jamming after some time
-    #cw_jammer.stop_jamming() 
+    def _run_jamming(self):
+        """Internal function to simulate continuous noise."""
+        while self.jamming_active:
+            print(f"[CWJammer] Jamming active... Power: {self.power_dbm} dBm")
+            time.sleep(self.jamming_interval)
+
+# Example Usage
+if __name__ == "__main__":
+    cw_jammer = ContinuousWaveJammer(power_dbm=-55, noise_level=1.0, jamming_interval=1.0)
+    cw_jammer.start_jamming()
+    time.sleep(5)
+    cw_jammer.stop_jamming()
