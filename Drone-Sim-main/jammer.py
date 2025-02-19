@@ -73,6 +73,10 @@ class PulsedNoiseJammer:
             if self.jamming_thread is not None:
                 self.jamming_thread.join()
             print("[PulsedNoiseJammer] Jamming stopped.")
+    
+    def jamming_signal_power(self):
+        """Returns the power of the jamming signal in dBm."""
+        return self.jamming_power_dbm
 
     def _run_jamming(self):
         """ Internal function to activate jamming bursts """
