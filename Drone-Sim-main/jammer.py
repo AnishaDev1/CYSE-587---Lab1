@@ -56,8 +56,7 @@ class PulsedNoiseJammer:
             message['latitude'] += random.uniform(-0.1, 0.1)
             message['longitude'] += random.uniform(-0.1, 0.1)
             message['altitude'] += random.uniform(-50, 50)
-        
-        return message
+            return message
 
     def start_jamming(self):
         """ Start pulsed jamming in a separate thread """
