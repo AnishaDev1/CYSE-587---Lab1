@@ -4,7 +4,7 @@ import time
 #some positioning libraries that may be helpful. 
 #import geopy 
 #from geographiclib import geodesic #can calculate distances between coordinates with this??
-#from gcs import GCS
+from gcs import GCS
 #import pygnssutils
 #import gnssanalysis #this one took a few min for an install
 
@@ -23,8 +23,8 @@ class Spoofer:
             #for i in random.randrange(0, 200): # for loop to spoof messages a random number of times (between 0 and 200)
                 print("[Spoofer] Spoofing message:", message)
                 spoofed_message = message.copy()
-                spoofed_message['latitude'] += random.uniform(-0.5, 0.5) #changed ranges 
-                spoofed_message['longitude'] += random.uniform(-0.5, 0.5) #changed ranges 
+                spoofed_message['latitude'] += random.uniform(0, 0.5) # changed ranges - only positive values so position only shifts in one direction
+                spoofed_message['longitude'] += random.uniform(0, 0.5) # changed ranges 
                 spoofed_message['altitude'] += random.uniform(-60, 60) #changed ranges
                 spoofed_message['timestamp'] += time.time() + random.uniform(0.8, 1.2) # modified range to reflect ADS-B broadcast at random time, roughly 0.8 - 1.2 seconds, to report wrong time
                 spoofed_message['drone_id'] = self.fake_drone_id if random.random() < 0.5 else message['drone_id']
