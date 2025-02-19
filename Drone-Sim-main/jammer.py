@@ -157,16 +157,9 @@ if __name__ == "__main__":
     time.sleep(5)
     cw_jammer.stop_jamming()
 
-import random
-import time
-import numpy as np
-import threading
 
 class SweepingJammer:
-    """
-    Implements a Sweeping Jamming (Frequency Hopping Jammer) attack, where the jammer
-    hops between different frequencies at defined intervals, disrupting drone communication.
-    """
+   
     def __init__(self, jamming_probability=0.4, noise_intensity=0.8, hop_rate=2, freq_range=(1090, 1100), power_dbm=-60):
         self.jamming_probability = jamming_probability
         self.noise_intensity = noise_intensity
@@ -178,7 +171,7 @@ class SweepingJammer:
         self.jamming_thread = None  # Thread for frequency hopping
 
     def start_jamming(self):
-        """Starts the sweeping jamming attack in a separate thread."""
+    
         if not self.jamming_active:
             self.jamming_active = True
             self.jamming_thread = threading.Thread(target=self._hop_frequency, daemon=True)
@@ -186,7 +179,7 @@ class SweepingJammer:
             print("[SweepingJammer] Jamming started...")
 
     def stop_jamming(self):
-        """Stops the jamming attack."""
+        
         if self.jamming_active:
             self.jamming_active = False
             if self.jamming_thread is not None:
@@ -194,17 +187,14 @@ class SweepingJammer:
             print("[SweepingJammer] Jamming stopped.")
 
     def _hop_frequency(self):
-        """Internal method that continuously changes the frequency at a set interval."""
+       
         while self.jamming_active:
             time.sleep(self.hop_rate)
             self.current_freq = random.choice(self.freq_range)
             print(f"[SweepingJammer] Hopped to frequency {self.current_freq} MHz")
 
     def jam_signal(self, message, drone_freq):
-        """
-        Attempts to jam a drone's communication.
-        If the jammer is on the same frequency as the drone, it may jam the message.
-        """
+      
         if self.jamming_active and drone_freq == self.current_freq and random.random() < self.jamming_probability:
             print(f"[SweepingJammer] Jamming message on {self.current_freq} MHz")
 
@@ -219,7 +209,7 @@ class SweepingJammer:
         return message, False
 
     def jamming_signal_power(self):
-        """Returns the power of the jamming signal in dBm."""
+     
         return self.power_dbm
 
 # Example Drone Class
