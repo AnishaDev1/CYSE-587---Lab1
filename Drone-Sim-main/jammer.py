@@ -34,12 +34,13 @@ class PulsedNoiseJammer:
     """
     Implements Pulsed Noise Jamming (Burst Jamming) where interference occurs in short bursts.
     """
-    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
+    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0, jamming_power_dbm = -70):
         self.pulse_duration = pulse_duration  # Duration of jamming bursts (seconds)
         self.pulse_interval = pulse_interval  # Time between bursts (seconds)
         self.noise_level = noise_level  # Intensity of noise
         self.jamming_active = False
         self.jamming_thread = None
+        self.jamming_power_dbm = jamming_power_dbm
 
     def generate_noise(self, signal_length):
         """ Generate noise burst """
