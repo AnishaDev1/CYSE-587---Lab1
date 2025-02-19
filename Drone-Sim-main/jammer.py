@@ -156,3 +156,95 @@ if __name__ == "__main__":
     cw_jammer.start_jamming()
     time.sleep(5)
     cw_jammer.stop_jamming()
+
+
+class SweepingJammer:
+   
+    def __init__(self, jamming_probability=0.4, noise_intensity=0.8, hop_rate=2, freq_range=(1090, 1100), power_dbm=-60):
+        self.jamming_probability = jamming_probability
+        self.noise_intensity = noise_intensity
+        self.hop_rate = hop_rate  # Time interval (seconds) between frequency hops
+        self.freq_range = list(range(freq_range[0], freq_range[1] + 1))  
+        self.current_freq = random.choice(self.freq_range)  # Start on a random frequency
+        self.power_dbm = power_dbm
+        self.jamming_active = False  # Initially inactive
+        self.jamming_thread = None  # Thread for frequency hopping
+
+    def start_jamming(self):
+    
+        if not self.jamming_active:
+            self.jamming_active = True
+            self.jamming_thread = threading.Thread(target=self._hop_frequency, daemon=True)
+            self.jamming_thread.start()
+            print("[SweepingJammer] Jamming started...")
+
+    def stop_jamming(self):
+        
+        if self.jamming_active:
+            self.jamming_active = False
+            if self.jamming_thread is not None:
+                self.jamming_thread.join()
+            print("[SweepingJammer] Jamming stopped.")
+
+    def _hop_frequency(self):
+       
+        while self.jamming_active:
+            time.sleep(self.hop_rate)
+            self.current_freq = random.choice(self.freq_range)
+            print(f"[SweepingJammer] Hopped to frequency {self.current_freq} MHz")
+
+    def jam_signal(self, message, drone_freq):
+      
+        if self.jamming_active and drone_freq == self.current_freq and random.random() < self.jamming_probability:
+            print(f"[SweepingJammer] Jamming message on {self.current_freq} MHz")
+
+            if random.random() < self.noise_intensity:
+                print("[SweepingJammer] Message completely lost!")
+                return None, True  # Message is lost
+            else:
+                message['latitude'] += random.uniform(-0.05, 0.05)
+                message['longitude'] += random.uniform(-0.05, 0.05)
+                message['altitude'] += random.uniform(-50, 50)
+                return message, True
+        return message, False
+
+    def jamming_signal_power(self):
+     
+        return self.power_dbm
+
+# Example Drone Class
+class Drone:
+    """Simulated drone that sends its position over a given frequency."""
+    def __init__(self, drone_id, initial_position, frequency):
+        self.id = drone_id
+        self.position = initial_position
+        self.frequency = frequency  
+        self.logs = []
+
+    def transmit(self, jammer):
+        """Sends a position signal that may be jammed."""
+        message = {'latitude': self.position[0], 'longitude': self.position[1], 'altitude': self.position[2]}
+        jammed_message, jammed = jammer.jam_signal(message, self.frequency)
+
+        if jammed_message is None:
+            print(f"[Drone-{self.id}] Transmission blocked!")
+        else:
+            print(f"[Drone-{self.id}] Sent position: {jammed_message}")
+
+        self.logs.append(jammed_message)
+        return jammed_message
+
+# Initialize drone and jammer
+jammer = SweepingJammer(jamming_probability=0.5, noise_intensity=0.8, hop_rate=3, freq_range=(1090, 1095), power_dbm=-55)
+drone = Drone(drone_id=1, initial_position=(33.6844, 73.0479, 1000), frequency=1092)
+
+# Start jamming before drone transmission
+jammer.start_jamming()
+
+# Simulate transmissions
+for _ in range(10):
+    time.sleep(1)
+    drone.transmit(jammer)
+
+# Stop jamming after testing
+jammer.stop_jamming()
