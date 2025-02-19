@@ -31,67 +31,49 @@ class Jammer:
         return self.jamming_power_dbm
 
 class PulsedNoiseJammer:
-    """
-    Implements Pulsed Noise Jamming (Burst Jamming) where interference occurs in short bursts.
-    """
-    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0, jamming_power_dbm = -70):
-        self.pulse_duration = pulse_duration  # Duration of jamming bursts (seconds)
-        self.pulse_interval = pulse_interval  # Time between bursts (seconds)
-        self.noise_level = noise_level  # Intensity of noise
+    def __init__(self, pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0):
+        """
+        Initialize a pulsed noise jammer.
+        :param pulse_duration: Duration of each jamming pulse in seconds.
+        :param pulse_interval: Interval between pulses in seconds.
+        :param noise_level: Strength of the noise added during jamming.
+        """
+        self.pulse_duration = pulse_duration
+        self.pulse_interval = pulse_interval
+        self.noise_level = noise_level
+        self.last_pulse_time = time.time()
         self.jamming_active = False
-        self.jamming_thread = None
-        self.jamming_power_dbm = jamming_power_dbm
 
-    def generate_noise(self, signal_length):
-        """ Generate noise burst """
-        return np.random.normal(0, self.noise_level, signal_length)
+    def update_jamming_state(self):
+        """Toggle jamming based on pulse timing."""
+        current_time = time.time()
+        elapsed_time = current_time - self.last_pulse_time
+
+        if self.jamming_active and elapsed_time >= self.pulse_duration:
+            self.jamming_active = False  # End jamming pulse
+            self.last_pulse_time = current_time
+
+        elif not self.jamming_active and elapsed_time >= self.pulse_interval:
+            self.jamming_active = True  # Start a new jamming pulse
+            self.last_pulse_time = current_time
 
     def jam_signal(self, message):
-        """ Introduce pulsed noise into the signal """
-        if message is None:
-            return None
-        
-        if random.random() > 0.5:  # Random chance to activate jamming
-            print("[PulsedNoiseJammer] Jamming message:", message)
-            message['latitude'] += random.uniform(-0.1, 0.1)
-            message['longitude'] += random.uniform(-0.1, 0.1)
-            message['altitude'] += random.uniform(-50, 50)
-            return message
-
-    def start_jamming(self):
-        """ Start pulsed jamming in a separate thread """
-        if not self.jamming_active:
-            self.jamming_active = True
-            self.jamming_thread = threading.Thread(target=self._run_jamming, daemon=True)
-            self.jamming_thread.start()
-            print("[PulsedNoiseJammer] Jamming started...")
-
-    def stop_jamming(self):
-        """ Stop jamming """
+        """
+        Applies pulsed jamming to a given message.
+        If the jammer is active, introduce high noise or nullify the message.
+        """
+        self.update_jamming_state()
         if self.jamming_active:
-            self.jamming_active = False
-            if self.jamming_thread is not None:
-                self.jamming_thread.join()
-            print("[PulsedNoiseJammer] Jamming stopped.")
-    
-    def jamming_signal_power(self):
-        """Returns the power of the jamming signal in dBm."""
-        return self.jamming_power_dbm
+            # Either completely jam (None) or introduce high noise in coordinates
+            if random.random() < 0.5:  # 50% chance to completely jam the message
+                return None, True
+            else:
+                message['latitude'] += random.uniform(-self.noise_level, self.noise_level)
+                message['longitude'] += random.uniform(-self.noise_level, self.noise_level)
+                message['altitude'] += random.uniform(-10 * self.noise_level, 10 * self.noise_level)
+                return message, True
+        return message, False  # Message not jammed
 
-    def _run_jamming(self):
-        """ Internal function to activate jamming bursts """
-        while self.jamming_active:
-            print("[PulsedNoiseJammer] Jamming activated")
-            time.sleep(self.pulse_duration)
-            print("[PulsedNoiseJammer] Jamming deactivated")
-            time.sleep(self.pulse_interval)
-
-# Example Usage
-if __name__ == "__main__":
-    jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
-    jammer.start_jamming()
-    time.sleep(10)  # Simulate system running
-    jammer.stop_jamming()
 
 
 

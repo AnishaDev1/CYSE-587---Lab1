@@ -6,10 +6,8 @@ from drone import Drone
 from route import RouteGenerator
 from gcs import GCS
 from adsbchannel import ADSBChannel
-from jammer import Jammer
-from spoofer import Spoofer
 from jammer import PulsedNoiseJammer
-import threading
+from spoofer import Spoofer
 
 # Define central location (e.g., Washington, D.C.)
 center_lat, center_lon = 38.8977, -77.0365  # White House location
@@ -41,8 +39,8 @@ drones = [
 
 # Initialize the communication channel, jammer, and spoofer
 channel = ADSBChannel()
-jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0) # Adjust probability as needed
-spoofer = Spoofer(spoof_probability=0.5, fake_drone_id="FAKE-DRONE") #made probability the same as spoofer.py to be 0.5
+pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)  # Pulled jamming settings
+spoofer = Spoofer(spoof_probability=0.5, fake_drone_id="FAKE-DRONE")  # Adjusted probability
 
 # Create a figure for 3D plotting
 fig = plt.figure()
@@ -70,6 +68,7 @@ ax.set_ylabel("Longitude")
 ax.set_zlabel("Altitude (m)")
 ax.legend()
 
+
 def update(frame):
     active_drones = False
     for drone in drones:
@@ -92,12 +91,12 @@ def update(frame):
 
             # Step 1: Simulate transmission from the drone to the GCS
             received_message, delay_ns, corrupted, snr_db = channel.transmit(
-                original_message, gcs_pos, jammer=jammer, spoofer=spoofer
+                original_message, gcs_pos, jammer=pulsed_jammer, spoofer=spoofer
             )
 
             if received_message is None:
-                print(f"Drone {drone.id} message lost during transmission.")
-                continue
+                print(f"Drone {drone.id} message lost due to jamming.")
+                continue  # Skip further processing if the message is jammed
 
             # Display Results
             print(f"Original Message: {original_message}")
@@ -127,8 +126,8 @@ def update(frame):
 
     return list(drone_markers.values())
 
+
 # Set up animation
 ani = FuncAnimation(fig, update, frames=range(100), interval=1000, blit=False)
 
 plt.show()
-
