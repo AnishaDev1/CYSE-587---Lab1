@@ -1,12 +1,8 @@
 import numpy as np
 import random
 import time
-
-# from jammer import PulsedNoiseJammer
 from gcs import GCS
-
-# pulsed_jammer = PulsedNoiseJammer(pulse_duration=0.5, pulse_interval=2.0, noise_level=1.0)
-# gcs = GCS()
+from jammer import PulsedNoiseJammer
 
 class ADSBChannel:
     def __init__(self, error_rate=0.01, frequency=1090e6, noise_figure_db=5.0):
@@ -58,10 +54,16 @@ class ADSBChannel:
 
         # Initialize SNR with the basic calculation
         snr_db = rx_power_dbm - (noise_power_dbm + self.noise_figure_db)
+
         # Apply jamming effects if a jammer is present
         if jammer:
-            jamming_signal_power_dbm = jammer.jamming_signal_power()
-            # Combine the noise power with the jamming signal power
+            received_message, jammed = jammer.jam_signal(message)
+
+            if jammed and received_message is None:
+                return None, delay_ns, True, snr_db  # Message lost due to jamming
+
+            message = received_message
+            jamming_signal_power_dbm = jammer.noise_level  # Adjusting noise level impact
             effective_noise_power_dbm = 10 * np.log10(
                 10**(noise_power_dbm / 10) + 10**(jamming_signal_power_dbm / 10)
             )
@@ -71,12 +73,12 @@ class ADSBChannel:
         if spoofer:
             spoofed_message, spoofed = spoofer.spoof_message(message)
             if spoofed:
-                # Assuming the spoofed message interferes with the legitimate signal
-                spoofing_signal_power_dbm = tx_power_dbm + 5 # Assuming same power for simplicity, Anisha -- Added 5 to make spoofing signal slightly stronger...
+                spoofing_signal_power_dbm = tx_power_dbm + 5  # Slightly stronger spoofing signal
                 effective_noise_power_dbm = 10 * np.log10(
                     10**(noise_power_dbm / 10) + 10**(spoofing_signal_power_dbm / 10)
                 )
                 snr_db = rx_power_dbm - (effective_noise_power_dbm + self.noise_figure_db)
+                message = spoofed_message  # Apply spoofed message if successful
 
         corrupted = False
         if snr_db < 0 or random.random() < self.error_rate:
@@ -86,15 +88,9 @@ class ADSBChannel:
         return message, delay_ns, corrupted, snr_db
 
     def corrupt_message(self, message):
+        """ Introduces random errors into the message. """
         corrupted_message = message.copy()
         corrupted_message['latitude'] += random.uniform(-0.01, 0.01)
         corrupted_message['longitude'] += random.uniform(-0.01, 0.01)
         corrupted_message['altitude'] += random.uniform(-10, 10)
         return corrupted_message
-    
-    # def transmit_message(signal):
-
-    #    if pulsed_jammer.jamming_active:
-    #        signal = pulsed_jammer.jam_signal(signal)
-
-    #    gcs.receive_update(signal) # send update to gcs somehow, idk if this is right
