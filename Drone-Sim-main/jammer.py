@@ -236,6 +236,7 @@ class Drone:
 
 # Initialize drone and jammer
 jammer = SweepingJammer(jamming_probability=0.5, noise_intensity=0.8, hop_rate=3, freq_range=(1090, 1095), power_dbm=-55)
+#jammer = PulsedNoiseJammer(jamming_probability=0.3, noise_intensity=0.7, jamming_power_dbm=-70)
 drone = Drone(drone_id=1, initial_position=(33.6844, 73.0479, 1000), frequency=1092)
 
 # Start jamming before drone transmission
