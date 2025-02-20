@@ -48,7 +48,91 @@ scenarios = {
     "Aggressive Spoofing": {"jamming": False, "spoofing": True, "spoof_probability": 0.7},
     "Pulsed Noise Jamming": {"jamming": True, "spoofing": False}
 }
+def plot_snr_data(results):
+    """
+    Plots SNR data as both line plots and box plots for each scenario.
 
+    Parameters:
+        results (dict): Dictionary containing SNR data for each scenario.
+    """
+   
+
+    # Box Plot
+    plt.figure(figsize=(12, 6))
+    snr_data = []
+    scenarios = []
+    for scenario, data in results.items():
+        if 'snr' in data and data['snr']:
+            _, snr_values = zip(*data['snr'])
+            snr_data.extend(snr_values)
+            scenarios.extend([scenario] * len(snr_values))
+    sns.boxplot(x=scenarios, y=snr_data)
+    plt.xlabel('Scenario')
+    plt.ylabel('SNR (dB)')
+    plt.title('SNR Distribution across Different Scenarios')
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.savefig('results/snr_box_plot.png')
+    plt.show()
+
+def plot_latency_data(results):
+    plt.figure(figsize=(12, 6))
+    for scenario, data in results.items():
+        if 'latency' in data and data['latency']:
+            messages, latencies = zip(*data['latency'])
+            plt.plot(messages, latencies, label=scenario)
+    plt.xlabel('Total Messages Sent')
+    plt.ylabel('Latency (ms)')
+    plt.title('Latency over Simulation Time for Different Scenarios')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('results/latency_plot.png')
+    plt.show()
+
+def plot_throughput_data(results):
+    plt.figure(figsize=(12, 6))
+    for scenario, data in results.items():
+        if 'throughput' in data and data['throughput']:
+            times, throughputs = zip(*data['throughput'])
+            plt.plot(times, throughputs, label=scenario)
+    plt.xlabel('Elapsed Time (s)')
+    plt.ylabel('Throughput (messages/second)')
+    plt.title('Throughput over Simulation Time for Different Scenarios')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('results/throughput_plot.png')
+    plt.show()
+
+def plot_packet_loss_data(results, colors=None, output_path='results/packet_loss.png'):
+    """
+    Plots packet loss over time for each scenario.
+
+    Parameters:
+        results (dict): Dictionary containing packet loss data for each scenario.
+        colors (list, optional): List of colors for each scenario plot. Defaults to None.
+        output_path (str, optional): File path to save the plot image. Defaults to 'results/packet_loss.png'.
+    """
+    if colors is None:
+        colors = ['blue', 'green', 'orange', 'red', 'purple']
+
+    plt.figure(figsize=(12, 8))
+
+    for (scenario, data), color in zip(results.items(), colors):
+        if 'packet_loss' in data and data['packet_loss']:
+            times, packet_loss = zip(*data['packet_loss'])
+            plt.plot(times, packet_loss, label=scenario, color=color)
+
+    plt.xlabel('Total Messages Sent')
+    plt.ylabel('Packet Loss (%)')
+    plt.title('Packet Loss over Simulation Time for Different Scenarios')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(output_path)
+    plt.show()
+
+
+
+# Function to run a simulation scenario
 def run_simulation(jamming=False, spoofing=False, spoof_probability=0.5):
     """ Runs a simulation scenario with or without jamming/spoofing. """
     channel = ADSBChannel()
@@ -163,3 +247,13 @@ def plot_packet_loss_data(results, colors=None, output_path='results/packet_loss
     plt.show()
 
 plot_packet_loss_data(results)
+
+
+# Plotting SNR over time for each scenario
+plot_snr_data(results)
+
+# Plotting Latency over time for each scenario
+plot_latency_data(results)
+
+# Plotting Throughput over time for each scenario
+plot_throughput_data(results)
